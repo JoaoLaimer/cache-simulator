@@ -2,6 +2,7 @@ import sys
 import struct
 import numpy as np
 import random as rd
+from collections import deque
 
 def main():
 	#if (len(sys.argv) != 7):
@@ -33,6 +34,10 @@ def main():
 			self.flagOut = flagOut
 			self.way = [[0] * int(nsets) for _ in range(assoc)]
 			self.arquivoEntrada = arquivoEntrada
+			
+			if (self.subst == 'F' or 'L'):
+				for i in range(nsets):
+					queue[i] = deque()
 
 			with open(arquivoEntrada, 'rb') as f:
 				self.binary_data = f.read()
@@ -56,19 +61,33 @@ def main():
 			print("arquivo =", self.arquivoEntrada)
 			#print("addresses =", self.adressesValues)
 
-		def replace(self, indice, tag):
-			if self.subst == 'R':
-				r = rd.randint(0, self.nsets-1)
-				self.way[indice][r] = tag
-				return
-
-			elif self.subst == 'L':
+		def replace(self, indice, tag, i):
+		
+			match self.subst:
+				
+				#Random
+				case 'R': 
+					r = rd.randint(0, self.nsets-1)
+					self.way[indice][r] = tag
+					return
+					
 				#LRU
-				return
-
-			elif self.subst == 'F':
+				case 'L':
+					self.way[indice][queue.popleft()] = tag
+					queue[indice].append(i)
+					return
+					
 				#FIFO
-				return
+				case 'F':
+					self.way[indice][queue.popleft()] = tag
+					queue[indice].append(i)
+					return
+					
+				#Random por default
+				case _:
+					r = rd.randint(0, self.nsets-1)
+					self.way[indice][r] = tag
+					return
 
 		def direct_mapped(self,indice,tag,miss,hits):
 		
@@ -88,16 +107,21 @@ def main():
 			return miss,hits
 		
 		def associative(self,indice,tag,miss,hits):
-			for i in range(self.nsets):
+			for i in range(self.assoc):
 				if self.way[indice][i].valid == 0:
 					self.way[indice][i].valid = 1
 					self.way[indice][i].block = tag
+					if (self.subst == 'F' or 'L'):
+						queue[indice].append(i)
 					miss+=1
 					break
 				elif self.way[indice][i].block == tag:
+					if (self.subst == 'L'):
+						#Provavelmente vou usar lista encadeada aqui
 					hits+=1					
 					break
 				else:
+				if (i = (assoc-1)):
 					self.replace(self, indice, tag)
 					miss+=1
 					break
