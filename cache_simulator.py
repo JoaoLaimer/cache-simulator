@@ -1,6 +1,7 @@
 import sys
 import struct
 import numpy as np
+import random as rd
 
 def main():
 	#if (len(sys.argv) != 7):
@@ -55,6 +56,20 @@ def main():
 			print("arquivo =", self.arquivoEntrada)
 			#print("addresses =", self.adressesValues)
 
+		def replace(self, indice, tag):
+			if self.subst == 'R':
+				r = rd.randint(0, self.nsets-1)
+				self.way[indice][r] = tag
+				return
+
+			elif self.subst == 'L':
+				#LRU
+				return
+
+			elif self.subst == 'F':
+				#FIFO
+				return
+
 		def direct_mapped(self,indice,tag,miss,hits):
 		
 			if self.way[0][indice].valid == 0:
@@ -73,19 +88,20 @@ def main():
 			return miss,hits
 		
 		def associative(self,indice,tag,miss,hits):
-			for i in range(self.assoc):
-				if self.way[i][indice].valid == 0:
-					self.way[i][indice].valid = 1
-					self.way[i][indice].block = tag
+			for i in range(self.nsets):
+				if self.way[indice][i].valid == 0:
+					self.way[indice][i].valid = 1
+					self.way[indice][i].block = tag
 					miss+=1
 					break
-				elif self.way[i][indice].block != tag:
-					self.way[i][indice].block = tag
+				elif self.way[indice][i].block == tag:
+					hits+=1					
+					break
+				else:
+					self.replace(self, indice, tag)
 					miss+=1
 					break
-				elif self.way[i][indice].block == tag:
-					hits+=1
-					break
+
 			return miss,hits
 
 		def read(self):
@@ -101,6 +117,8 @@ def main():
 				else:
 					miss,hits = self.associative(indice,tag,miss,hits)
 			print(" miss=",miss," hits=",hits," total=",miss+hits," taxa=",(hits/(miss+hits))*100,"%")
+
+
 		
 	class Cache_block:
 		def __init__(self):	
