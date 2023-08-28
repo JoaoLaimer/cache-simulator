@@ -3,6 +3,7 @@ import struct
 import numpy as np
 import random as rd
 from collections import deque
+from structlinks.DataStructures import DoublyLinkedList
 
 def main():
 	#if (len(sys.argv) != 7):
@@ -35,9 +36,11 @@ def main():
 			self.way = [[0] * int(nsets) for _ in range(assoc)]
 			self.arquivoEntrada = arquivoEntrada
 			
-			if (self.subst == 'F' or 'L'):
-				for i in range(nsets):
-					queue[i] = deque()
+			if (self.subst == 'F'):
+				fila = [deque() for _ in range(nsets)]
+
+			if (self.subst == 'L'):
+				linked_list = [DoublyLinkedList() for _ in range(nsets)]
 
 			with open(arquivoEntrada, 'rb') as f:
 				self.binary_data = f.read()
@@ -67,20 +70,20 @@ def main():
 				
 				#Random
 				case 'R': 
-					r = rd.randint(0, self.nsets-1)
+					r = rd.randrange(0, self.nsets)
 					self.way[indice][r] = tag
 					return
 					
 				#LRU
 				case 'L':
-					self.way[indice][queue.popleft()] = tag
-					queue[indice].append(i)
+					self.way[indice][linked_list[indice].pop(0)]
+					linked_list[indice].append()
 					return
 					
 				#FIFO
 				case 'F':
-					self.way[indice][queue.popleft()] = tag
-					queue[indice].append(i)
+					self.way[indice][fila[indice].popleft()] = tag
+					fila[indice].append(i)
 					return
 					
 				#Random por default
@@ -111,13 +114,17 @@ def main():
 				if self.way[indice][i].valid == 0:
 					self.way[indice][i].valid = 1
 					self.way[indice][i].block = tag
-					if (self.subst == 'F' or 'L'):
+					if (self.subst == 'F'):
 						queue[indice].append(i)
+					if (self.subst == 'L'):
+						linked_list[indice].append(i)
 					miss+=1
 					break
 				elif self.way[indice][i].block == tag:
 					if (self.subst == 'L'):
-						#Provavelmente vou usar lista encadeada aqui
+						linked_list[indice].remove(i)
+						linked_list[indice].append(i)
+					
 					hits+=1					
 					break
 				else:
