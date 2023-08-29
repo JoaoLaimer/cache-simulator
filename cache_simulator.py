@@ -3,7 +3,7 @@ import struct
 import numpy as np
 import random as rd
 from collections import deque
-from structlinks.DataStructures import DoublyLinkedList
+
 
 def main():
 	#if (len(sys.argv) != 7):
@@ -37,11 +37,9 @@ def main():
 			print(self.way)
 			self.arquivoEntrada = arquivoEntrada
 			
-			if (self.subst == 'F'):
+			if (self.subst == 'F' or 'L'):
 				self.fila = [deque() for _ in range(nsets)]
 
-			if (self.subst == 'L'):
-				self.linked_list = [DoublyLinkedList() for _ in range(nsets)]
 
 
 			with open(arquivoEntrada, 'rb') as f:
@@ -78,9 +76,9 @@ def main():
 					
 				#LRU
 				case 'L':
-					self.way[indice][self.linked_list[indice].pop(0)]
-					self.linked_list[indice].append(i)
-					print("AA",self.linked_list)
+					l = self.fila[indice].popleft()
+					self.way[indice][l] = tag
+					self.fila[indice].append(i)
 					return
 					
 				#FIFO
@@ -117,21 +115,15 @@ def main():
 				if self.way[indice][i].valid == 0:
 					self.way[indice][i].valid = 1
 					self.way[indice][i].block = tag
-					if (self.subst == 'F'):
+					if (self.subst == 'F' or 'L'):
 						self.fila[indice].append(i)
-					if (self.subst == 'L'):
-						self.linked_list[indice].append(i)
+						
 					miss+=1
 					break
 				elif self.way[indice][i].block == tag:
-					k = i
 					if (self.subst == 'L'):
-						print(self.linked_list[indice])
-						self.linked_list[indice].remove(i)
-						self.linked_list[indice].append(i)
-						self.linked_list[indice].append(i)
-
-					
+						self.fila[indice].remove(i)
+						self.fila[indice].append(i)
 					hits+=1					
 					break
 				elif (i == (assoc-1)):
