@@ -11,10 +11,10 @@ def main():
 	#	print("python cache_simulator.py <nsets> <bsize> <assoc> <substituição> <flag_saida> arquivo_de_entrada")
 	#	exit(1) 
 	
-	nsets = 256 #int(sys.argv[1])
+	nsets = 4 #int(sys.argv[1])
 	bsize = 4#int(sys.argv[2])
-	assoc = 1#int(sys.argv[3])
-	subst = 'R'#sys.argv[4]
+	assoc = 2#int(sys.argv[3])
+	subst = 'L'#sys.argv[4]
 	flagOut = 1#int(sys.argv[5])
 	arquivoEntrada = "./Endereços/bin_100.bin"#sys.argv[6]
 	
@@ -33,14 +33,16 @@ def main():
 			self.assoc = assoc
 			self.subst = subst
 			self.flagOut = flagOut
-			self.way = [[0] * int(nsets) for _ in range(assoc)]
+			self.way = [[0] * int(assoc) for _ in range(nsets)]
+			print(self.way)
 			self.arquivoEntrada = arquivoEntrada
 			
 			if (self.subst == 'F'):
-				fila = [deque() for _ in range(nsets)]
+				self.fila = [deque() for _ in range(nsets)]
 
 			if (self.subst == 'L'):
-				linked_list = [DoublyLinkedList() for _ in range(nsets)]
+				self.linked_list = [DoublyLinkedList() for _ in range(nsets)]
+
 
 			with open(arquivoEntrada, 'rb') as f:
 				self.binary_data = f.read()
@@ -50,15 +52,15 @@ def main():
 
 		def create_cache(self):
 			print("Criando cache")
-			for i in range(self.assoc):
-				for j in range(int(self.nsets)):
+			for i in range(self.nsets):
+				for j in range(int(self.assoc)):
 					self.way[i][j] = Cache_block()
 			print("Cache criada")
 
 		def print_atributes(self):
 			print("nsets =", int(self.nsets), "bsize =", self.bsize, "assoc =", self.assoc)
 			print("subst =", self.subst, "flagOut =", self.flagOut)
-			for i in range(self.assoc):
+			for i in range(self.nsets):
 				print("way = ", i)
 				print("nsets = ", len(self.way[i]))
 			print("arquivo =", self.arquivoEntrada)
@@ -76,14 +78,15 @@ def main():
 					
 				#LRU
 				case 'L':
-					self.way[indice][linked_list[indice].pop(0)]
-					linked_list[indice].append()
+					self.way[indice][self.linked_list[indice].pop(0)]
+					self.linked_list[indice].append(i)
+					print("AA",self.linked_list)
 					return
 					
 				#FIFO
 				case 'F':
-					self.way[indice][fila[indice].popleft()] = tag
-					fila[indice].append(i)
+					self.way[indice][self.fila[indice].popleft()] = tag
+					self.fila[indice].append(i)
 					return
 					
 				#Random por default
@@ -94,17 +97,17 @@ def main():
 
 		def direct_mapped(self,indice,tag,miss,hits):
 		
-			if self.way[0][indice].valid == 0:
-				self.way[0][indice].valid = 1
-				self.way[0][indice].block = tag
+			if self.way[indice][0].valid == 0:
+				self.way[indice][0].valid = 1
+				self.way[indice][0].block = tag
 				miss+=1
 				print("miss comp")
 			else:
-				if self.way[0][indice].block != tag:
-					self.way[0][indice].block = tag
+				if self.way[indice][0].block != tag:
+					self.way[indice][0].block = tag
 					miss+=1
 					print("miss")
-				elif self.way[0][indice].block == tag:
+				elif self.way[indice][0].block == tag:
 					hits+=1
 					print("hit")
 			return miss,hits
@@ -115,21 +118,24 @@ def main():
 					self.way[indice][i].valid = 1
 					self.way[indice][i].block = tag
 					if (self.subst == 'F'):
-						queue[indice].append(i)
+						self.fila[indice].append(i)
 					if (self.subst == 'L'):
-						linked_list[indice].append(i)
+						self.linked_list[indice].append(i)
 					miss+=1
 					break
 				elif self.way[indice][i].block == tag:
+					k = i
 					if (self.subst == 'L'):
-						linked_list[indice].remove(i)
-						linked_list[indice].append(i)
+						print(self.linked_list[indice])
+						self.linked_list[indice].remove(i)
+						self.linked_list[indice].append(i)
+						self.linked_list[indice].append(i)
+
 					
 					hits+=1					
 					break
-				else:
-				if (i = (assoc-1)):
-					self.replace(self, indice, tag)
+				elif (i == (assoc-1)):
+					self.replace(self, indice, tag, i)
 					miss+=1
 					break
 
