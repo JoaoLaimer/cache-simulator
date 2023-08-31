@@ -109,7 +109,7 @@ def main():
 			else:
 				if self.way[indice][0].block != tag:
 					self.way[indice][0].block = tag
-					if len(self.way) == self.nsets:
+					if self.is_full():
 						missCap+=1
 					else:
 						missConf+=1
