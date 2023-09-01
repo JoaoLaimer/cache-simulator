@@ -6,25 +6,27 @@ from collections import deque
 
 
 def main():
-	#if (len(sys.argv) != 7):
-	#	print("Numero de argumentos incorreto. Utilize:")
-	#	print("python cache_simulator.py <nsets> <bsize> <assoc> <substituição> <flag_saida> arquivo_de_entrada")
-	#	exit(1) 
+	if (len(sys.argv) != 7):
+		print("Numero de argumentos incorreto. Utilize:")
+		print("python cache_simulator.py <nsets> <bsize> <assoc> <substituição> <flag_saida> arquivo_de_entrada")
+		exit(1) 
 	
-	nsets = 1#int(sys.argv[1])
-	bsize = 4#int(sys.argv[2])
-	assoc = 32#int(sys.argv[3])
-	subst = 'F'#sys.argv[4]
-	flagOut = 1#int(sys.argv[5])
-	arquivoEntrada = './Endereços/vortex.in.sem.persons.bin'#sys.argv[6]
+	nsets = int(sys.argv[1])
+	bsize = int(sys.argv[2])
+	assoc = int(sys.argv[3])
+	subst = sys.argv[4]
+	flagOut = int(sys.argv[5])
+	arquivoEntrada = sys.argv[6]
 	
 	n_bits_offset = int(np.log2(bsize))
-	print("offset = ",n_bits_offset)
-	n_bits_indice = int(np.log2(nsets))
-	print("indice = ",n_bits_indice)
-	n_bits_tag = 32 - n_bits_offset - n_bits_indice
-	print("tag = ",n_bits_tag)
 
+	n_bits_indice = int(np.log2(nsets))
+
+	n_bits_tag = 32 - n_bits_offset - n_bits_indice
+	if flagOut == 0:
+		print("Tamanho offset = ", n_bits_offset, "bits")
+		print("Tamanho indice = ", n_bits_indice, "bits")
+		print("Tamanho tag = ", n_bits_tag, "bits\n")
 	class Cache:
 
 		def __init__(self,nsets,bsize,assoc,subst,flagOut):
@@ -36,6 +38,12 @@ def main():
 			self.way = [[0] * int(assoc) for _ in range(nsets)]
 			#print(self.way)
 			self.arquivoEntrada = arquivoEntrada
+			if nsets > 1 and assoc == 1:
+				self.cacheType = 0
+			if nsets > 1 and assoc > 1:
+				self.cacheType = 1
+			if nsets == 1 and assoc > 1:
+				self.cacheType = 2
 			
 			if (self.subst == 'F' or 'L'):
 				self.fila = [deque() for _ in range(nsets)]
@@ -58,10 +66,18 @@ def main():
 		def print_atributes(self):
 			print("nsets =", int(self.nsets), "bsize =", self.bsize, "assoc =", self.assoc)
 			print("subst =", self.subst, "flagOut =", self.flagOut)
-			for i in range(self.nsets):
-				print("way = ", i)
-				print("nsets = ", len(self.way[i]))
-			print("arquivo =", self.arquivoEntrada)
+			print("Nro de conjuntos:", int(self.nsets))
+			print("Tamanho dos conjuntos = ", self.assoc, "blocos")
+			print("Tamanho total da Cache = ", self.nsets * self.bsize * self.assoc, "bytes")
+			print("Arquivo =", self.arquivoEntrada)
+			print("Tipo de Cache :")
+			if self.cacheType == 0:
+				print("Diretamente mapeada")
+			elif self.cacheType == 1:
+				print("Conjunto associativa", self.assoc, "- way")
+			else:
+				print("Totalmente associativa")
+
 			#print("addresses =", self.adressesValues)
 
 		def replace(self, indice, tag, i):
@@ -169,10 +185,17 @@ def main():
 			missCompRate = missComp/(missConf+missComp+missCap)
 			missCapRate = missCap/(missConf+missComp+missCap)
 			missConfRate = missConf/(missConf+missComp+missCap)
-
-			print("%d" %totalAccesses,"%.4f" %hitRate, "%.4f" %missRate, "%.2f" %missCompRate, "%.2f" %missCapRate, "%.2f" %missConfRate)
+			if self.flagOut == 1:
+				print("%d" %totalAccesses,"%.4f" %hitRate, "%.4f" %missRate, "%.2f" %missCompRate, "%.2f" %missCapRate, "%.2f" %missConfRate)
+				input()
 			# total de acessos, taxa de hit, taxa de miss, taxa de miss compulsorio, taxa de miss de capacidade, taxa de miss de conflito
-
+			else:
+				print("Total de acessos:", totalAccesses)
+				print("Taxa de hit:", hitRate)
+				print("Taxa de misses compulsorios:", missCompRate)
+				print("Taxa de misses de capacidade:", missCapRate)
+				print("Taxa de misses de conflito:", missConfRate)
+				input()
 		
 	class Cache_block:
 		def __init__(self):	
@@ -183,7 +206,8 @@ def main():
 			
 	C = Cache(nsets,bsize,assoc,subst,flagOut)
 	C.create_cache()
-	#C.print_atributes()
+	if flagOut == 0:
+		C.print_atributes()
 	C.read()
 
 if __name__ == '__main__':
