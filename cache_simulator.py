@@ -14,7 +14,7 @@ def main():
 	nsets = 1#int(sys.argv[1])
 	bsize = 4#int(sys.argv[2])
 	assoc = 32#int(sys.argv[3])
-	subst = 'R'#sys.argv[4]
+	subst = 'F'#sys.argv[4]
 	flagOut = 1#int(sys.argv[5])
 	arquivoEntrada = './Endereços/vortex.in.sem.persons.bin'#sys.argv[6]
 	
@@ -78,18 +78,19 @@ def main():
 				case 'L':
 					l = self.fila[indice].popleft()
 					self.way[indice][l].block = tag
-					self.fila[indice].append(i)
+					self.fila[indice].append(l)
 					return
 					
 				#FIFO
 				case 'F':
-					self.way[indice][self.fila[indice].popleft()] = tag
-					self.fila[indice].append(i)
+					l = self.fila[indice].popleft()
+					self.way[indice][l].block = tag
+					self.fila[indice].append(l)
 					return
 					
 				#Random por default
 				case _:
-					r = rd.randint(0, self.nsets-1)
+					r = rd.randrange(0, self.assoc)
 					self.way[indice][r].block = tag
 					return
 		def is_full(self):
@@ -160,6 +161,7 @@ def main():
 					missComp,missCap,missConf,hits = self.direct_mapped(indice,tag,missComp,missCap,missConf,hits)
 				else:
 					missComp,missCap,missConf,hits = self.associative(indice,tag,missComp,missCap,missConf,hits)
+
 			
 			totalAccesses =  missConf+hits+missComp+missCap
 			hitRate = hits/totalAccesses
