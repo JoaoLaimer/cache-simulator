@@ -9,7 +9,7 @@ F: FIFO, ou First In First Out, implementa uma fila por conjunto, que armazena a
 L: LRU, ou Least Recently Used, também implementa uma fila, mas esta armazena em sua direita a última posição a ser referenciada, seja por escrita ou por leitura. Sempre que ocorre um acesso à cache, a posição que foi acessada é removida da fila, e reinserida à direita da mesma. A função de substituição é idêntica à FIFO, pois o controle de frequência é feito durante o acesso à cache.
 
 <H2>Uso:</H2>
-Da linha de comando, na pasta "cache-simulator", utilizar o seguinte comando:
+Da linha de comando, na pasta "cache-simulator", utilizar o comando na seguinte forma:
 
   python cache_simulator.py <nsets> <bsize> <assoc> <substituição> <flag_saida> arquivo_de_entrada
 
