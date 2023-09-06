@@ -22,4 +22,6 @@ bsize: Número de bytes por bloco da cache
 assoc: Associatividade. Use 1 para diretamente mapeada
 substituição: Política de susbstituição, como definida acima. Usar apenas R, L ou F. Qualquer outro valor deve resultar em Random
 flag_saida: Flag para selecionar o tipo de output. 0 para pessoas, 1 para o bot do professor
-arquivo_de_entrada: caminho para o arquivo de entrada
+arquivo_de_entrada: caminho para o arquivo de entrada<br>
+
+Imports usados: sys,struct,numpy,random,collections
