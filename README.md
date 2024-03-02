@@ -14,7 +14,7 @@ L: LRU, ou Least Recently Used, também implementa uma fila, mas esta armazena e
 <H2>Uso:</H2>
 Da linha de comando, na pasta "cache-simulator", utilizar o comando na seguinte forma:
 
-  python cache_simulator.py <nsets> <bsize> <assoc> <substituição> <flag_saida> arquivo_de_entrada
+  python cache_simulator.py (nsets) (bsize) (assoc) (substituição) (flag_saida) arquivo_de_entrada
 
 Sendo:
 nsets: Número de conjuntos na cache a ser simulada. Use 1 para totalmente associativa
