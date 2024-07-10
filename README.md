@@ -1,6 +1,5 @@
 <h1> Simple Cache Simulator </h1>
-<h3> AOCII - Cache Simulator</h3>
-Este projeto consiste em um simulador de cache, desenvolvido em linguagem python para a disciplina de AOCII.
+
 <h2>Features:</h2>
 O simulador é capaz de simular caches diretamente mapeadas, totalmente associativas, ou conjunto-associativas
 Conta com três políticas de substituição para caches com associatividade, mapeadas da seguinte forma:
